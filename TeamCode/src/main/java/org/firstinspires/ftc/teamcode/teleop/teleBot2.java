@@ -12,6 +12,14 @@ import java.util.Objects;
 @TeleOp(name = "teleBot2")
 public class teleBot2 extends OpMode
 {
+    private enum HorizontalSlideState
+    {
+        NORMAL,
+        RETRACT
+    }
+
+    private HorizontalSlideState horizontalSlideState = HorizontalSlideState.NORMAL;
+
     DcMotor horizontalSlideMotor;
     DcMotor verticalSlideMotor;
 
@@ -29,8 +37,8 @@ public class teleBot2 extends OpMode
     final double verticalMotorSpeed = 1.0;
     final double horizontalMotorSpeed = 1.0;
 
-    final int verticalSlideUpperLimit = 3000;
-    final int verticalSlideLowerLimit = 100;
+    final int verticalSlideUpperLimit = 2000;
+    final int verticalSlideLowerLimit = 50;
     final int horizontalSlideUpperLimit = 600;
     final int horizontalSlideLowerLimit = 50;
 
@@ -67,11 +75,37 @@ public class teleBot2 extends OpMode
     @Override
     public void loop()
     {
-        slidesHandler();
-        clawsHandler();
+        verticalSlideHandler();
+        verticalClawHandler();
         armHandler();
         driveHandler();
         telemtryHandler();
+        if (gamepad1.back)
+        {
+            horizontalSlideState = HorizontalSlideState.RETRACT;
+        }
+        switch (horizontalSlideState)
+        {
+            case NORMAL:
+                horizontalSlideHandler();
+                horizontalClawHandler();
+                break;
+            case RETRACT:
+                horizontalSlidePosition = -horizontalSlideMotor.getCurrentPosition();
+                if (horizontalSlidePosition > horizontalSlideLowerLimit)
+                {
+                    horizontalSlideMotor.setPower(horizontalMotorSpeed);
+                }
+                if (horizontalSlidePosition <= horizontalSlideLowerLimit)
+                {
+                    horizontalArmPosition = 1;
+                    horizontalArmServo.setPosition(horizontalArmPosition);
+                    horizontalSlideMotor.setPower(0); // Return to normal state
+                    horizontalSlideState = HorizontalSlideState.NORMAL;
+                }
+                break;
+        }
+
     }
     private void telemtryHandler()
     {
@@ -82,6 +116,7 @@ public class teleBot2 extends OpMode
         telemetry.addData("Vertical claw position: ", verticalClawServo.getPosition());
         telemetry.addData("Horizontal claw position: ", horizontalClawServo.getPosition());
         telemetry.addData("Driving joystick: ", drivingJoystick);
+        telemetry.addData("Horizontal slide state: ", horizontalSlideState);
         telemetry.update();
     }
     private void driveHandler()
@@ -157,11 +192,6 @@ public class teleBot2 extends OpMode
         }
         horizontalArmServo.setPosition(horizontalArmPosition);
     }
-    private void clawsHandler()
-    {
-        horizontalClawHandler();
-        verticalClawHandler();
-    }
     private void horizontalClawHandler()
     {
         if (gamepad1.x && !horizontalClawToggle)
@@ -190,26 +220,27 @@ public class teleBot2 extends OpMode
             verticalClawToggle = false;
         }
     }
-    private void slidesHandler()
-    {
-        verticalSlideHandler();
-        horizontalSlideHandler();
-    }
     private void verticalSlideHandler()
     {
         final double triggerThreshold = 0.1;
 
-        verticalSlidePosition = -verticalSlideMotor.getCurrentPosition();
+        verticalSlidePosition = verticalSlideMotor.getCurrentPosition();
 
         double power = 0;
 
         if (gamepad1.left_bumper && gamepad1.left_trigger <= triggerThreshold)
         {
-            power = -verticalMotorSpeed;
+            if (verticalSlidePosition > verticalSlideLowerLimit)
+            {
+                power = -verticalMotorSpeed;
+            }
         }
         else if (gamepad1.left_trigger > triggerThreshold && !gamepad1.left_bumper)
         {
-            power = verticalMotorSpeed;
+            if (verticalSlidePosition < verticalSlideUpperLimit)
+            {
+                power = verticalMotorSpeed;
+            }
         }
         verticalSlideMotor.setPower(power);
     }

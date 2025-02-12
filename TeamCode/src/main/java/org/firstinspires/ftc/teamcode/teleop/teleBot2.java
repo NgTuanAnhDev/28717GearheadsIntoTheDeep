@@ -120,7 +120,7 @@ public class teleBot2 extends OpMode
                 horizontalClawHandler();
                 break;
             case RETRACT:
-                horizontalArmPosition = 0.35;
+                horizontalArmPosition = 0.5;
                 horizontalArmServo.setPosition(horizontalArmPosition);
                 horizontalSlidePosition = -horizontalSlideMotor.getCurrentPosition();
                 if (horizontalSlidePosition > horizontalSlideLowerLimit)
@@ -229,7 +229,7 @@ public class teleBot2 extends OpMode
     {
         switchHandler();
         if (drivingGamepad == null) return;
-        double forward = drivingGamepad.left_stick_y;
+        double forward = -drivingGamepad.left_stick_y;
         double turn = drivingGamepad.right_stick_x;
         drive.setMotorDrivePowers(forward - turn, forward + turn);
     }
@@ -284,11 +284,11 @@ public class teleBot2 extends OpMode
         }
         else if (gamepad1.dpad_right)
         {
-            horizontalArmPosition = .28;
+            horizontalArmPosition = .38;
         }
         else if (gamepad1.dpad_left)
         {
-            horizontalArmPosition = .35;
+            horizontalArmPosition = .45;
         }
         horizontalArmServo.setPosition(horizontalArmPosition);
     }

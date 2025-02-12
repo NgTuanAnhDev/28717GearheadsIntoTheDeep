@@ -49,6 +49,7 @@ public class firstAuton extends LinearOpMode {
                     takesample();
                     moveForward(1000);
                     dropsample();
+                    moveBackward(1000);
                     break;
             }
 
@@ -90,14 +91,14 @@ public class firstAuton extends LinearOpMode {
     }
     private  void dropsample(){
         keothanh();
-        verticalClawServo.setPosition(2);
-        verticalArmServo.setPosition(0.85); // mở
-        verticalArmServo.setPosition(0); // đóng
+        verticalArmServo.setPosition(1);
+        verticalClawServo.setPosition(0.85); // mở
+        verticalClawServo.setPosition(0); // đóng
     }
     private void takesample() {
         hathanh();
-        verticalClawServo.setPosition(1);
-        verticalArmServo.setPosition(0.85); // mở
-        verticalArmServo.setPosition(0); // đóng
+        verticalArmServo.setPosition(0);
+        verticalClawServo.setPosition(0.85); // mở
+        verticalClawServo.setPosition(0); // đóng
     }
 }

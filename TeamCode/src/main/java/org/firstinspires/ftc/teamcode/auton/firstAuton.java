@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.TankDrive
+import org.firstinspires.ftc.teamcode.drive.TankDrive;
 
 @Autonomous(name = "firstAuton")
 public class firstAuton extends LinearOpMode {
@@ -14,7 +14,11 @@ public class firstAuton extends LinearOpMode {
     public enum FirstAutonState {
         MOVING_TO_SAMPLE,
         MOVING_TO_POINT,
+
     }
+    int verticalSlidePosition;
+    final int verticalSlideUpperLimit = 600; // chinh sau
+    final int verticalSlideLowerLimit = 0;
     DcMotor verticalSlideMotor;
     Servo verticalArmServo;
     Servo verticalClawServo;
@@ -39,19 +43,13 @@ public class firstAuton extends LinearOpMode {
         FirstAutonState currentState = FirstAutonState.MOVING_TO_POINT;
         while (opModeIsActive()) {
             switch (currentState) {
-                case MOVING_TO_SAMPLE:
-                    telemetry.addData("state","Moving to sample");
-                    telemetry.update();
-                    moveForward(1000);
-                    sleep(2000);
-                    takesample();
-                    currentState = FirstAutonState.MOVING_TO_POINT;
-                    break;
                 case MOVING_TO_POINT:
                     telemetry.addData("State", "Moving to POINT");
                     telemetry.update();
+                    takesample();
+                    moveForward(1000);
                     dropsample();
-                    currentState = FirstAutonState.MOVING_TO_SAMPLE;
+                    moveBackward(1000);
                     break;
             }
 
@@ -60,15 +58,15 @@ public class firstAuton extends LinearOpMode {
     }
 
     private void moveForward(long timeInMillis) {
-        leftMotor.setPower(-0.5);
-        rightMotor.setPower(-0.5);
+        leftMotor.setPower(-1);
+        rightMotor.setPower(-1);
         sleep(timeInMillis);
         stopMotor();
     }
 
     private void moveBackward(long timeInMillis) {
-        leftMotor.setPower(0.5);
-        rightMotor.setPower(0.5);
+        leftMotor.setPower(1);
+        rightMotor.setPower(1);
         sleep(timeInMillis);
         stopMotor();
     }
@@ -77,19 +75,30 @@ public class firstAuton extends LinearOpMode {
         rightMotor.setPower(0);
     }
 
-    private void takesample() {
-        verticalArmServo.setPosition();
-        verticalClawServo.setPosition();
+    private void keothanh() {
+        verticalSlidePosition = verticalSlideMotor.getCurrentPosition();
+        verticalSlideMotor.setPower(1);
+        if (verticalSlidePosition == verticalSlideUpperLimit) {
+            verticalSlideMotor.setPower(0);
+        }
+    }
+    private  void hathanh() {
+        verticalSlidePosition = verticalSlideMotor.getCurrentPosition();
+        verticalSlideMotor.setPower(-1);
+        if (verticalSlidePosition == verticalSlideLowerLimit) {
+            verticalSlideMotor.setPower(0);
+        }
     }
     private  void dropsample(){
-        moveForward(1000);
-        verticalArmServo.setPosition();
-        moveBackward(500);
-        verticalClawServo.setPosition(0.75);
-        moveBackward(1000);
-        verticalArmServo.setPosition();
-        verticalClawServo.setPosition();
-
+        keothanh();
+        verticalArmServo.setPosition(1);
+        verticalClawServo.setPosition(0.85); // mở
+        verticalClawServo.setPosition(0); // đóng
     }
-
+    private void takesample() {
+        hathanh();
+        verticalArmServo.setPosition(0);
+        verticalClawServo.setPosition(0.85); // mở
+        verticalClawServo.setPosition(0); // đóng
+    }
 }

@@ -1,17 +1,15 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.robot;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.drive.TankDrive;
-import org.firstinspires.ftc.teamcode.robot.ArmPosition;
-import org.firstinspires.ftc.teamcode.robot.Robot;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-@TeleOp(name = "teleBot3")
-public class teleBot3 extends OpMode
+public class Robot
 {
     Dictionary<ArmPosition.HorizontalPosition, Double> horizontalArmPosition =
             new Dictionary<ArmPosition.HorizontalPosition, Double>() {
@@ -88,26 +86,33 @@ public class teleBot3 extends OpMode
                 }
             };
 
-    Robot robot;
-    @Override
-    public void init()
+    private DcMotor horizontalSlideMotor;
+    private DcMotor verticalSlideMotor;
+
+    private Servo verticalArmServo;
+    private Servo horizontalArmServo;
+
+    private Servo horizontalClawServo;
+    private Servo verticalClawServo;
+    public Robot(Dictionary<ArmPosition.HorizontalPosition, Double> horizontalPosition,
+                 Dictionary<ArmPosition.VerticalPosition, Double> verticalPosition)
     {
-        horizontalArmPosition.put(ArmPosition.HorizontalPosition.CONNECTING_POSITION, 1.0);
-        horizontalArmPosition.put(ArmPosition.HorizontalPosition.BARRIER_AVOIDING_POSITION, 0.45);
-        horizontalArmPosition.put(ArmPosition.HorizontalPosition.AIMING_POSITION, 0.38);
-        horizontalArmPosition.put(ArmPosition.HorizontalPosition.GRABBING_POSITION, 0.0);
-
-        verticalArmPosition.put(ArmPosition.VerticalPosition.CONNECTING_POSITION, 0.0);
-        verticalArmPosition.put(ArmPosition.VerticalPosition.DUMPING_POSITION, 0.85);
-        verticalArmPosition.put(ArmPosition.VerticalPosition.SPECIMEN_POSITION, 1.0);
-
-        robot = new Robot(horizontalArmPosition, verticalArmPosition);
-        robot.init(hardwareMap);
+        //horizontalArmPosition = horizontalPosition;
+        //verticalArmPosition = verticalPosition;
     }
-
-    @Override
-    public void loop()
+    public void init(@NonNull HardwareMap hardwareMap)
     {
+        horizontalSlideMotor = hardwareMap.dcMotor.get("horizontalSlide");
+        verticalSlideMotor = hardwareMap.dcMotor.get("verticalSlide");
 
+        horizontalSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalSlideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        verticalArmServo = hardwareMap.servo.get("verticalArm");
+        horizontalArmServo = hardwareMap.servo.get("horizontalArm");
+
+        horizontalClawServo = hardwareMap.servo.get("horizontalClaw");
+        verticalClawServo = hardwareMap.servo.get("verticalClaw");
     }
 }

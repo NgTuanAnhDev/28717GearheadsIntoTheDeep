@@ -33,7 +33,7 @@ public class luckyAuton extends LinearOpMode {
 
         waitForStart();
         telemetry.addData("Statu", "RUNNING");
-        telemetry.update()
+        telemetry.update();
         upper();
         verticalArmServo.setPosition(1);
         moveForward(1000);

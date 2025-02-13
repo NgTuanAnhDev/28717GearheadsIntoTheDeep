@@ -33,13 +33,17 @@ public class luckyAuton extends LinearOpMode {
 
         waitForStart();
         telemetry.addData("Statu", "RUNNING");
+        telemetry.update();
         upper();
         verticalArmServo.setPosition(1);
         moveForward(1000);
-        verticalClawServo.setPosition(1); // Adjust after
-        verticalArmServo.setPosition(0);
+        verticalClawServo.setPosition(1);
         lower();
+        verticalArmServo.setPosition(0);
+        verticalClawServo.setPosition(0);
         moveBackward(1000);
+        telemetry.addData("Statu", "DONE");
+        telemetry.update();
     }
     private void upper() {
         verticalSlidePosition = verticalSlideMotor.getCurrentPosition();
